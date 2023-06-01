@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>O JOGO</title>
+</head>
+<body>
+    <table>
+        <tr>
+            <form id="registrationForm" method="post" action="/personagens">
+            <td><label for="Nome">Nome:</label></td>
+            <td><input type="text" id="Nome" name="Nome" required></td>
+        </tr>
+        <tr>
+            <td><label for="Classe">Classe:</label></td>
+            <td><input type="text" id="Classe" name="Classe" required></td>
+        </tr>
+        <tr>
+            <td><label for="Idade">Idade:</label></td>
+            <td><input type="text" id="Idade" name="Idade" required></td>
+        </tr>
+        <tr>
+            <td><label for="Nacionalidade">Nacionalidade:</label></td>
+            <td><input type="text" id="Nacionalidade" name="Nacionalidade" required></td>
+        </tr>
+        <tr>
+            <td><label for="Afiliacao">Afiliação: </label></td>
+            <td><input type="text" id="Afiliacao" name="Afiliacao" required></td>
+        </tr>
+        <tr>
+            <td><input type="submit" value="Criar"></td>
+        </tr>
+        </form>
+        <tr>
+          <form id="consultaForm" method="GET" action="/personagens/:id">  
+            <td>Buscar Personagens do Servidor</td>
+            <td><label for="path">Informe ID:</label></td>
+            <td><input type="text" id="path" name="path" required></td>
+            <td><input type="submit" value="Buscar"></td>
+          </form>
+        </tr>
+    </table> 
+    
+    <div id="resultado"></div>
+
+<script>
+
+
+      document.getElementById('registrationForm').addEventListener('submit', function(event) {
+      event.preventDefault(); // Evita o envio padrão do formulário
+
+      // Obtém os valores do formulário
+      const Nome = document.getElementById('Nome').value;
+      const Classe = document.getElementById('Classe').value;
+      const Idade = document.getElementById('Idade').value;
+      const Nacionalidade = document.getElementById('Nacionalidade').value;
+      const Afiliacao = document.getElementById('Afiliacao').value;
+
+      // Cria um objeto com os dados do formulário
+      const formData = {
+        Nome: Nome,
+        Classe: Classe,
+        Idade: Idade,
+        Nacionalidade: Nacionalidade,
+        Afiliacao: Afiliacao
+      };
+
+      // Envia uma requisição POST para o servidor
+      fetch('/personagens', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log(data);
+        // Faça algo com a resposta do servidor, se necessário
+      })
+      .catch(error => {
+        console.error('Erro:', error);
+      });
+    });
+
+    document.getElementById('consultaForm').addEventListener('submit', function(event) {
+      event.preventDefault(); // Evita o envio padrão do formulário
+
+      // Obtém o valor do parâmetro de consulta
+      const path = document.getElementById('path').value;
+
+      // Envia uma requisição GET para o servidor
+      fetch("/personagens/${encodeURIComponent(path)}")
+        .then(response => response.json())
+        .then(data => {
+          // Manipula os resultados da consulta
+          const resultadoDiv = document.getElementById('resultado');
+          resultadoDiv.innerHTML = '';
+
+          data.forEach(objeto => {
+            const item = document.createElement('div');
+            item.textContent = JSON.stringify(objeto);
+            resultadoDiv.appendChild(item);
+          });
+        })
+        .catch(error => {
+          console.error('Erro:', error);
+        });
+    });
+
+</script>
+</body>
+</html>
